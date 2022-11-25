@@ -1,85 +1,51 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import EditField from "@/components/EditField.vue";
+import ViewField from "@/components/ViewField.vue";
+import { reactive } from "vue";
+import type {Prices} from "@/types";
+
+const state = reactive<Prices>([
+		{
+			label: "Baseprice",
+			value: 1,
+		},
+		{
+			label: "Scrap Surcharge",
+			value: 10,
+		},
+	],
+);
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
+    <h1>Price Components</h1>
   </header>
-
-  <RouterView />
+  <p class="total">Total: {{state.reduce((total, priceEntry) => total + priceEntry.value, 0) }} EUR/kg</p>
+	<section>
+		<ul>
+			<li v-for="(priceEntry, index) in state" :key="index">
+				<ViewField
+						:label="priceEntry.label"
+						:value="priceEntry.value"
+						@newValue="priceEntry.value = $event"
+						@delete="state.splice(index, 1)"
+				/>
+			</li>
+			<EditField @submit="state.push($event)"/>
+		</ul>
+	</section>
 </template>
 
 <style scoped>
 header {
-  line-height: 1.5;
-  max-height: 100vh;
+	text-align: center;
+}
+.total {
+	text-align: right;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+li {
+	list-style: none;
 }
 </style>
