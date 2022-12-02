@@ -1,32 +1,33 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-const props = defineProps({
-	label: String,
-	value: Number,
-})
-const emit = defineEmits(['newValue', 'delete'])
-const submit = () => {
-	emit('newValue', currentValue)
-}
-const deleteComponent = () => {
-	emit('delete')
-}
+	import {ref} from 'vue'
+	import ValueInput from "@/components/ValueInput.vue"
 
-let currentValue = ref<number>(props.value ?? 0)
+	const props = defineProps({
+		label: String,
+		value: Number,
+		canDelete: Boolean,
+	})
+	const emit = defineEmits(['update:value', 'delete'])
+	const submit = () => {
+		emit('update:value', currentValue)
+	}
+	const deleteComponent = () => {
+		emit('delete')
+	}
 
+	let currentValue = ref<number>(props.value ?? 0)
 </script>
 
 <template>
-  <form @submit.prevent="submit">
-    <label for="value">{{ label }}</label>
-
-    <input type="number" id="value" v-model="currentValue" @input="submit"/>
+	<form @submit.prevent="submit">
+		<label for="value">{{ label }}</label>
+		<ValueInput v-model:value="currentValue" />
 		<input type="submit" value="Submit" @click="submit" />
-
-    <input type="button" id="delete" value="X" @click="deleteComponent" />
-
-  </form>
-
+		<input
+			type="button" id="delete" value="X" @click="deleteComponent"
+			:style="{visibility: props.canDelete ? 'visible' : 'hidden'}"
+		/>
+	</form>
 </template>
 
 
@@ -34,6 +35,7 @@ let currentValue = ref<number>(props.value ?? 0)
 form {
 	display: flex;
 }
+
 label {
 	flex: 1;
 }
